@@ -5,10 +5,13 @@
 import subprocess
 import time
 import battery as battery
+
 import pygame as pg
 import power
-
 from datetime import datetime
+
+from tkinter import *
+
 
 music_file = "audiox.wav"
 volume = 1.0
@@ -45,14 +48,14 @@ def play_music(music_file, volume):     #Reproduz se a musica existir
 
 def take_action(music_file,volume,horaBegin,horaEnd,atual):    #notificacao da percentagem da bateria
 
-    command_above = "notify-send 'Bateria acima de 60'%"
-    command_below = "notify-send 'Bateria abaixo de 60%'"
-    command_Corrente = "notify-send 'Em modo Corrente'"
-    command_bat = "notify-send 'Em modo Bateria'"
-    times = 0
+   command_above = "notify-send 'Bateria acima de 60'%"
+   command_below = "notify-send 'Bateria abaixo de 60%'"
+   command_Corrente = "notify-send 'Em modo Corrente'"
+   command_bat = "notify-send 'Em modo Bateria'"
+   times = 0
 
-    ans = power.PowerManagement().get_providing_power_source_type()
-    if not ans:
+   ans = power.PowerManagement().get_providing_power_source_type()
+   if not ans:
         #Modo Corrente
         subprocess.Popen(["/bin/bash", "-c", command_Corrente])
         charge = int(read_status())
@@ -60,12 +63,12 @@ def take_action(music_file,volume,horaBegin,horaEnd,atual):    #notificacao da p
         time.sleep(30)
         take_action(music_file,volume,horaBegin,horaEnd,atual)
 
-    else:
+   else:
         #Modo Bateria
-        subprocess.Popen(["/bin/bash", "-c", command_bat])
-        charge = int(read_status())
-        time.sleep(10)
-        #print "Modo Bateria"
+    subprocess.Popen(["/bin/bash", "-c", command_bat])
+    charge = int(read_status())
+    time.sleep(10)
+
 
     if horaBegin == atual > horaEnd:
         if charge > 60:
@@ -92,8 +95,8 @@ def take_action(music_file,volume,horaBegin,horaEnd,atual):    #notificacao da p
         time.sleep(15)
         take_action(music_file,volume,horaBegin,horaEnd,atual)
         #print "else nao desperta"
-# Main
 
+# Main
 time.sleep(10)
 
 #valores entre as quais o programa se mantem silencioso
@@ -106,4 +109,3 @@ now = datetime.now()
 atual = now.hour
 take_action(music_file,volume,horaBegin,horaEnd,atual)
 
-#ver de criar setup para executar isto no linux
