@@ -11,11 +11,11 @@ import power
 from datetime import datetime
 
 from tkinter import *
-
+from tkinter import *
+import os.path
 
 music_file = "audiox.wav"
 volume = 1.0
-
 def read_status():  #verifica estado da bateria
 
     command = "upower -i $(upower -e | grep BAT) | grep --color=never -E percentage|xargs|cut -d' ' -f2|sed s/%//"
@@ -67,22 +67,31 @@ def take_action(music_file,volume,horaBegin,horaEnd,atual):    #notificacao da p
         #Modo Bateria
     subprocess.Popen(["/bin/bash", "-c", command_bat])
     charge = int(read_status())
-    time.sleep(10)
+    time.sleep(5)
 
+    print (atual < horaEnd or atual == horaBegin)
 
-    if horaBegin == atual > horaEnd:
+    if ((atual < horaEnd or atual == horaBegin)):
+
         if charge > 60:
+            print "> 60"
+            subprocess.Popen(["/bin/bash", "-c", command_above])
             time.sleep(10)
             take_action(music_file,volume,horaBegin,horaEnd,atual)
 
             if times == 0:
-                subprocess.Popen(["/bin/bash", "-c", command_above])
+                subprocess.Popen(["/bin/bash", "-c", command_below])
                 times = 1
+            else:
+                times = 0
+                time.sleep(5)
+                take_action(music_file,volume,horaBegin,horaEnd,atual)
 
         elif charge < 60:
+            print "< 60"
+            play_music(music_file, volume)
             time.sleep(10)
             take_action(music_file,volume,horaBegin,horaEnd,atual)
-            play_music(music_file, volume)
 
             if times == 0:
                 subprocess.Popen(["/bin/bash", "-c", command_below])
@@ -94,18 +103,31 @@ def take_action(music_file,volume,horaBegin,horaEnd,atual):    #notificacao da p
     else :
         time.sleep(15)
         take_action(music_file,volume,horaBegin,horaEnd,atual)
-        #print "else nao desperta"
 
-# Main
-time.sleep(10)
+if __name__ == '__main__':
+    print "Hello, world!"
+    now = datetime.now()
+    atual = now.hour
 
-#valores entre as quais o programa se mantem silencioso
-date = datetime.now()
-horaBegin = 22
-horaEnd = 07
+    my_file = "Times.txt"
+    existe = os.path.isfile(my_file)
 
-#atual
-now = datetime.now()
-atual = now.hour
-take_action(music_file,volume,horaBegin,horaEnd,atual)
+    if (existe == TRUE):
+     file = open(my_file, 'r')
+     for data in open(my_file):
 
+          hora01=data[0]
+          hora02=data[1]
+          horax= hora01+''+hora02
+          horaBegin = horax
+
+          hora03=data[2]
+          hora04=data[3]
+
+          horaz=hora03+''+hora04
+          horaEnd = horaz
+          print "File exists"
+          take_action(music_file,volume,horaBegin,horaEnd,atual)
+
+    else:
+     from LayAvisaBat.py import *
