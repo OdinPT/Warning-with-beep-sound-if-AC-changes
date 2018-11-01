@@ -105,7 +105,6 @@ def take_action(music_file,volume,horaBegin,horaEnd,atual):    #notificacao da p
         take_action(music_file,volume,horaBegin,horaEnd,atual)
 
 if __name__ == '__main__':
-    print "Hello, world!"
     now = datetime.now()
     atual = now.hour
 
